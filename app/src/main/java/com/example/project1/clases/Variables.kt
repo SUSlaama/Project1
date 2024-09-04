@@ -27,7 +27,7 @@ package com.example.project1.clases
         println(names.joinToString())
 
         println(" ")
-    val numbers = arrayOf(1,2,3,4,5,6,7,8,9)
+        val numbers = arrayOf(1,2,3,4,5,6,7,8,9)
         isEven(numbers)
         println(getDay(4))
 
