@@ -18,8 +18,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,6 +61,7 @@ class MainActivity : ComponentActivity() {
                 CustomText()
                 Picture()
                 Content1()
+                Content2()
                 //Text(text = "Simple text")
                 //ModifierExample()
                 //ModifierExample2()
@@ -176,7 +181,7 @@ fun CustomText(){
     }
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun Picture(){
     Column (
@@ -194,7 +199,7 @@ fun Picture(){
     }
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun Content1(){
     Card(modifier = Modifier
@@ -258,6 +263,55 @@ fun Content2(){
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BoxExample1() {
+    Box(
+        modifier = Modifier
+            .background(Color.DarkGray)
+            .fillMaxWidth()
+            .padding(5.dp)
+    ){
+        Image(painterResource(R.drawable.android_logo),
+            contentDescription = "Android Logo",
+            contentScale = ContentScale.FillBounds
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 150.dp),
+            horizontalArrangement = Arrangement.Center
+        ){
+            Icon(
+                Icons.Filled.AccountCircle,
+                contentDescription = "Icon Account"
+            )
+            Text(text = "Text",
+
+            )
+        }
+
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BoxExample2(){
+    Box(modifier = Modifier
+        .background(Color.Magenta)
+        .padding(5.dp)
+        .size(250.dp)
+    ){
+        Text(text = "TopStart", Modifier.align(Alignment.TopStart))
+        Text(text = "TopEnd", Modifier.align(Alignment.TopEnd))
+        Text(text = "CenterStart", Modifier.align(Alignment.CenterStart))
+        Text(text = "Center", Modifier.align(Alignment.Center))
+        Text(text = "CenterEnd", Modifier.align(Alignment.CenterEnd))
+        Text(text = "BottomStart", Modifier.align(Alignment.BottomStart))
+        Text(text = "BottomEnd", Modifier.align(Alignment.BottomEnd))
     }
 }
 
