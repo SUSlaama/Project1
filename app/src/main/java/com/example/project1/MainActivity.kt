@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         //enableEdgeToEdge()
         setContent {
-            ComposeMultiScreenApp()
+            //ComposeMultiScreenApp()
         }
     }//
 }//
@@ -333,7 +333,7 @@ fun BoxExample2(){
 fun clickAction(){
     println("Column clicked")
 }*/
-
+/*
 @Composable
 fun ComposeMultiScreenApp(){
     val navController = rememberNavController()
@@ -348,4 +348,4 @@ fun SetupNavGraph(navController: NavHostController){
         composable("menu") { MenuScreen(navController) }
         composable("home") { HomeScreen(navController) }
     }
-}
+}*/
