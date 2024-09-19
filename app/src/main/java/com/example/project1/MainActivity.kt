@@ -77,8 +77,8 @@ class MainActivity : ComponentActivity() {
             //ComposeMultiScreenApp()
             screen()
         }
-    }//
-}//
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -92,29 +92,29 @@ fun screen() {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    IconButton(onClick = { /* TODO */ }) {
+                ) {//.clickable(onClick = { clickAction()})
+                    IconButton(onClick = { clickAction() }) {
                         Icon(
                             imageVector = Icons.Default.Home,
                             contentDescription = "Home",
                             tint = Color.White
                         )
                     }
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = { clickAction() }) {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "Friends",
                             tint = Color.White
                         )
                     }
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = { clickAction() }) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search",
                             tint = Color.White
                         )
                     }
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = { clickAction() }) {
                         Icon(
                             imageVector = Icons.Default.Menu,
                             contentDescription = "Library",
@@ -133,7 +133,8 @@ fun screen() {
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -142,20 +143,38 @@ fun screen() {
                     contentDescription = "Xbox logo",
                     modifier = Modifier.size(40.dp)
                 )
-                Row {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Perfil",
-                        tint = Color.White,
-                        modifier = Modifier.size(35.dp)
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    IconButton(
+                        onClick = { clickAction() },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(Color.Gray, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Perfil",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(35.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.width(12.dp))
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notifications",
-                        tint = Color.White,
-                        modifier = Modifier.size(32.dp)
-                    )
+                    IconButton(
+                        onClick = { clickAction() },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(Color.Gray, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(32.dp)
+                        )
+                    }
                 }
             }
             Row(
@@ -167,7 +186,8 @@ fun screen() {
                 repeat(3) {
                     Column(
                         modifier = Modifier
-                            .background(Color.Gray),
+                            .background(Color.Gray)
+                            .clickable { clickAction() },
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(
@@ -194,7 +214,7 @@ fun screen() {
                 }
             }
             Text(
-                text = "Vuelve al juego",
+                text = "Vuelve al juego 2",
                 color = Color.White,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
@@ -211,18 +231,21 @@ fun screen() {
                     contentDescription = "Game cover",
                     modifier = Modifier
                         .size(100.dp)
+                        .clickable { clickAction() }
                 )
                 Image(
                     painter = painterResource(id = R.drawable.game2),
                     contentDescription = "Game cover",
                     modifier = Modifier
                         .size(100.dp)
+                        .clickable { clickAction() }
                 )
                 Image(
                     painter = painterResource(id = R.drawable.game3),
                     contentDescription = "Game cover",
                     modifier = Modifier
                         .size(100.dp)
+                        .clickable { clickAction() }
                 )
             }
             Text(
@@ -243,18 +266,21 @@ fun screen() {
                     contentDescription = "Game cover",
                     modifier = Modifier
                         .size(100.dp)
+                        .clickable { clickAction() }
                 )
                 Image(
                     painter = painterResource(id = R.drawable.game1),
                     contentDescription = "Game cover",
                     modifier = Modifier
                         .size(100.dp)
+                        .clickable { clickAction() }
                 )
                 Image(
                     painter = painterResource(id = R.drawable.game2),
                     contentDescription = "Game cover",
                     modifier = Modifier
                         .size(100.dp)
+                        .clickable { clickAction() }
                 )
             }
             Text(
@@ -276,6 +302,7 @@ fun screen() {
                         contentDescription = "Juegos de game pass",
                         modifier = Modifier
                             .size(100.dp)
+                            .clickable { clickAction() }
                     )
                 }
             }
@@ -546,10 +573,10 @@ Text(text = "BottomStart", Modifier.align(Alignment.BottomStart))
 Text(text = "BottomEnd", Modifier.align(Alignment.BottomEnd))
 }
 }
-
+*/
 fun clickAction(){
 println("Column clicked")
-}*/
+}
 /*
 @Composable
 fun ComposeMultiScreenApp(){
