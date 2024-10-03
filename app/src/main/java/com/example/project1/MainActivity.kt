@@ -62,7 +62,7 @@ import com.example.project1.ui.sreens.MenuScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
+        enableEdgeToEdge()
         setContent {
             ComposeMultiScreenApp()
         }
