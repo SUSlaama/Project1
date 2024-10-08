@@ -16,6 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -89,6 +93,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -100,6 +105,7 @@ import androidx.navigation.NavController
 import com.example.project1.R
 import com.example.project1.data.model.MenuModel
 import com.example.project1.data.model.PostModel
+import com.example.project1.ui.components.PostCard
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -644,10 +650,13 @@ fun Bars() {
             Icon(Icons.Filled.Settings, contentDescription = "", tint = Color.White)
         }
         val post = arrayOf(
-            PostModel(1, "Title 1", "Text 1"),
-            PostModel(2, "Title 2", "Text 2"),
-            PostModel(3, "Title 3", "Text 3"),
-            PostModel(4, "Title 4", "Text 4")
+            PostModel(1, "Title 1", "Text 1", painterResource(R.drawable.android_logo)),
+            PostModel(2, "Title 2", "Text 2", painterResource(R.drawable.android_logo)),
+            PostModel(3, "Title 3", "Text 3", painterResource(R.drawable.android_logo)),
+            PostModel(4, "Title 4", "Text 4", painterResource(R.drawable.android_logo)),
+            PostModel(5, "Title 5", "Text 4", painterResource(R.drawable.android_logo)),
+            PostModel(6, "Title 6", "Text 4", painterResource(R.drawable.android_logo)),
+            PostModel(7, "Title 7", "Text 4", painterResource(R.drawable.android_logo))
         )
         Column (
             modifier = Modifier
@@ -655,7 +664,12 @@ fun Bars() {
                 .padding(10.dp,90.dp,10.dp,50.dp)
                 .fillMaxSize()
                 //.verticalScroll(rememberScrollState())
-        ){Posts(post)}
+        ){
+            //PostCard(1,"This is a card title","This is the text card", painterResource(R.drawable.android_logo))
+            //Posts(post)
+            PostGrid(post)
+
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -717,18 +731,25 @@ fun Bars() {
 @Composable
 fun Posts(arrayPosts: Array<PostModel>){
     //Espera a que llegue la info para que se ejecute
-    LazyColumn(
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
     ) {//Se repetira este texto lo que queramos (creo xdd)
         items(arrayPosts) { post ->
-            Text(
-                text = post.title,
-                color = Color.White,
-                fontSize = 16.sp
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider(thickness = 2.dp)
+            PostCard(post.id, post.title, post.text, post.image)
+        }
+    }
+}
+
+@Composable
+fun PostGrid(arrayPosts: Array<PostModel>){
+    LazyVerticalGrid (
+        columns = GridCells.Adaptive(minSize = 120.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        items(arrayPosts) { post ->
+            PostCard(post.id, post.title, post.text, post.image)
         }
     }
 }
