@@ -16,14 +16,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -72,6 +78,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTimePickerState
@@ -81,11 +88,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -94,8 +103,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
+import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.project1.R
+import com.example.project1.data.model.MenuModel
 import com.example.project1.data.model.PostModel
+import com.example.project1.ui.components.PostCard
+import com.example.project1.ui.components.PostCardCompact
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -105,7 +119,22 @@ import java.util.logging.Filter
 
 @Composable
 fun Components(navController: NavController) {
-    var component by remember { mutableStateOf("") }//actualizar el valor de la variable en la interfaz
+    val menuOptions = arrayOf(
+        MenuModel(1, "Buttons", "buttons", Icons.Filled.AccountBox),
+        MenuModel(2, "Floating Buttons", "floating-buttons", Icons.Filled.DateRange),
+        MenuModel(3, "Chips", "chips", Icons.Filled.AccountBox),
+        MenuModel(4, "Progress", "progress", Icons.Filled.AccountBox),
+        MenuModel(5, "Sliders", "sliders", Icons.Filled.AccountBox),
+        MenuModel(6, "Switches", "switches", Icons.Filled.AccountBox),
+        MenuModel(7, "Badges", "badges", Icons.Filled.AccountBox),
+        MenuModel(8, "Date Pickers", "date-pickers", Icons.Filled.AccountBox),
+        MenuModel(9, "Time Pickers", "time-pickers", Icons.Filled.AccountBox),
+        MenuModel(10, "Snack Bars", "snack-bars", Icons.Filled.AccountBox),
+        MenuModel(11, "Alert Dialogs", "alert-dialogs", Icons.Filled.AccountBox),
+        MenuModel(12, "Bars", "bars", Icons.Filled.AccountBox),
+        MenuModel(13, "Adaptive", "adaptive", Icons.Filled.AccountBox)
+    )
+    var component by rememberSaveable { mutableStateOf("") }//actualizar el valor de la variable en la interfaz
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
@@ -115,200 +144,30 @@ fun Components(navController: NavController) {
             ModalDrawerSheet {
                 Text("Menu", modifier = Modifier.padding(16.dp))
                 HorizontalDivider()
-                //content 1
-                NavigationDrawerItem(
-                    label = { Text(text = "Content 1") },
-                    selected = false,
-                    onClick = {
-                        component = "Content1"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
+                LazyColumn {
+                    items(menuOptions) {item ->
+                        NavigationDrawerItem(
+                            icon = {Icon(item.icon, contentDescription = "")},
+                            label = {Text(text= item.title)},
+                            selected = false,
+                            onClick = {
+                                component = item.option
+                                scope.launch {
+                                    drawerState.apply {
+                                        close()
+                                    }
+                                }
                             }
-                        }
+                        )
                     }
-                )
-                //content 2
-                NavigationDrawerItem(
-                    label = { Text(text = "Content 2") },
-                    selected = false,
-                    onClick = {
-                        component = "Content2"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //Buttons
-                NavigationDrawerItem(
-                    label = { Text(text = "Buttons") },
-                    selected = false,
-                    onClick = {
-                        component = "Buttons"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //Floating A Buttons
-                NavigationDrawerItem(
-                    label = { Text(text = "Floating Buttons") },
-                    selected = false,
-                    onClick = {
-                        component = "floating-buttons"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //Chips
-                NavigationDrawerItem(
-                    label = { Text(text = "Chips") },
-                    selected = false,
-                    onClick = {
-                        component = "chips"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //Progress
-                NavigationDrawerItem(
-                    label = { Text(text = "Progress") },
-                    selected = false,
-                    onClick = {
-                        component = "progress"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //Sliders
-                NavigationDrawerItem(
-                    label = { Text(text = "Sliders") },
-                    selected = false,
-                    onClick = {
-                        component = "sliders"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //Switches
-                NavigationDrawerItem(
-                    label = { Text(text = "Switches") },
-                    selected = false,
-                    onClick = {
-                        component = "switches"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //Badges
-                NavigationDrawerItem(
-                    label = { Text(text = "Badges") },
-                    selected = false,
-                    onClick = {
-                        component = "badges"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //DatePickers
-                NavigationDrawerItem(
-                    label = { Text(text = "DatePickers") },
-                    selected = false,
-                    onClick = {
-                        component = "date-pickers"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //TimePickers
-                NavigationDrawerItem(
-                    label = { Text(text = "TimePickers") },
-                    selected = false,
-                    onClick = {
-                        component = "time-pickers"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //SnackBars
-                NavigationDrawerItem(
-                    label = { Text(text = "SnackBars") },
-                    selected = false,
-                    onClick = {
-                        component = "snack-bars"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //AlertDialogs
-                NavigationDrawerItem(
-                    label = { Text(text = "AlertDialogs") },
-                    selected = false,
-                    onClick = {
-                        component = "alert-dialogs"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
-                //Bars
-                NavigationDrawerItem(
-                    label = { Text(text = "Bars") },
-                    selected = false,
-                    onClick = {
-                        component = "bars"
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                )
+                }
+
             }
         }
     ) {
         //screen content
         Column {
             when (component) {
-                "Content1" -> {
-                    Content1()
-                }
-                "Content2" -> {
-                    Content2()
-                }
                 "Buttons" -> {
                     Buttons()
                 }
@@ -350,21 +209,13 @@ fun Components(navController: NavController) {
                 "bars" -> {
                     Bars()
                 }
+                "adaptive" -> {
+                    Adaptive()
+                }
             }
         }
     }
 }
-
-@Composable
-fun Content1() {
-    Text(text = "Content 1")
-}
-
-@Composable
-fun Content2() {
-    Text(text = "Content 2")
-}
-
 
 //@Preview(showBackground = true)
 @Composable
@@ -807,10 +658,13 @@ fun Bars() {
             Icon(Icons.Filled.Settings, contentDescription = "", tint = Color.White)
         }
         val post = arrayOf(
-            PostModel(1, "Title 1", "Text 1"),
-            PostModel(2, "Title 2", "Text 2"),
-            PostModel(3, "Title 3", "Text 3"),
-            PostModel(4, "Title 4", "Text 4")
+            PostModel(1, "Title 1", "Text 1", painterResource(R.drawable.android_logo)),
+            PostModel(2, "Title 2", "Text 2", painterResource(R.drawable.android_logo)),
+            PostModel(3, "Title 3", "Text 3", painterResource(R.drawable.android_logo)),
+            PostModel(4, "Title 4", "Text 4", painterResource(R.drawable.android_logo)),
+            PostModel(5, "Title 5", "Text 4", painterResource(R.drawable.android_logo)),
+            PostModel(6, "Title 6", "Text 4", painterResource(R.drawable.android_logo)),
+            PostModel(7, "Title 7", "Text 4", painterResource(R.drawable.android_logo))
         )
         Column (
             modifier = Modifier
@@ -818,7 +672,12 @@ fun Bars() {
                 .padding(10.dp,90.dp,10.dp,50.dp)
                 .fillMaxSize()
                 //.verticalScroll(rememberScrollState())
-        ){Posts(post)}
+        ){
+            //PostCard(1,"This is a card title","This is the text card", painterResource(R.drawable.android_logo))
+            //Posts(post)
+            PostGrid(post)
+
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -878,20 +737,68 @@ fun Bars() {
 }
 
 @Composable
-fun Posts(arrayPosts: Array<PostModel>){
+fun Posts(arrayPosts: Array<PostModel>, adaptive:String){
     //Espera a que llegue la info para que se ejecute
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
     ) {//Se repetira este texto lo que queramos (creo xdd)
         items(arrayPosts) { post ->
-            Text(
-                text = post.title,
-                color = Color.White,
-                fontSize = 16.sp
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider(thickness = 2.dp)
+            when(adaptive){
+                "PhoneP" -> {
+                    PostCardCompact(post.id, post.title, post.text, post.image)
+                }
+                "PhoneL" -> {
+                    PostCard(post.id, post.title, post.text, post.image)
+                }
+            }
         }
     }
+}
+
+@Composable
+fun PostGrid(arrayPosts: Array<PostModel>){
+    LazyVerticalGrid (
+        columns = GridCells.Adaptive(minSize = 120.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        items(arrayPosts) { post ->
+            PostCard(post.id, post.title, post.text, post.image)
+        }
+    }
+}
+
+//@Preview(showBackground = true)
+@Composable
+fun Adaptive(){
+    var WindowsSize = currentWindowAdaptiveInfo().windowSizeClass
+    var height = currentWindowAdaptiveInfo().windowSizeClass.windowHeightSizeClass
+    var width = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+
+    val post = arrayOf(
+        PostModel(1, "Title 1", "Text 1", painterResource(R.drawable.android_logo)),
+        PostModel(2, "Title 2", "Text 2", painterResource(R.drawable.android_logo)),
+        PostModel(3, "Title 3", "Text 3", painterResource(R.drawable.android_logo)),
+        PostModel(4, "Title 4", "Text 4", painterResource(R.drawable.android_logo)),
+        PostModel(5, "Title 5", "Text 4", painterResource(R.drawable.android_logo)),
+        PostModel(6, "Title 6", "Text 4", painterResource(R.drawable.android_logo)),
+        PostModel(7, "Title 7", "Text 4", painterResource(R.drawable.android_logo))
+    )
+    if (width == WindowWidthSizeClass.COMPACT){
+        Posts(post, "PhoneP")
+    } else if (height == WindowHeightSizeClass.COMPACT){
+        Posts(post, "PhoneL")
+    } else {
+        Posts(post, "Phone")
+    }
+
+    /*    Compact width < 600 dp Phone portrait
+    Medium width >= 600 dp < 840 dp Tablets portrait
+    Expanded width > 840 dp Tablet landscape
+    Compact height < 480dp Phone landscape
+    Medium height >= 480dp < 900 dp Tablet landscape or Phone portrait
+    Expanded height > 900dp Tablet in portrait    */
+
+    //Text(text = WindowsSize.toString())
 }
