@@ -70,4 +70,18 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    implementation("com.google.maps.android:maps-compose:2.11.2")
+    implementation("com.google.maps.android.gms:play-services-maps:18.2.0")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation("com.google.android.libraries.places:places:3.3.0")
+
+    implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 }
