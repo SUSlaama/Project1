@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.Cyan
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +54,7 @@ import com.example.project1.ui.theme.Project1Theme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.project1.ui.sreens.CameraScreen
 import com.example.project1.ui.sreens.Components
 import com.example.project1.ui.sreens.HomeScreen
 import com.example.project1.ui.sreens.LoginScreen
@@ -83,5 +85,8 @@ fun SetupNavGraph(navController: NavHostController){
         composable("home") { HomeScreen(navController) }
         composable("componentes") { Components(navController)}
         composable("login") { LoginScreen(navController)}
+        composable("camera") {
+            val context = LocalContext.current
+            CameraScreen(context)}
     }
 }
