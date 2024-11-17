@@ -88,7 +88,7 @@ fun LoginForm (navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(0.dp, 10.dp),
-                onClick = { navController.navigate("home") }
+                onClick = { navController.navigate("menu") }
             ) {
                 Text("LOG IN")
             }
