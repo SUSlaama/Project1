@@ -51,9 +51,12 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,6 +77,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
@@ -81,7 +85,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDrawerState
@@ -99,12 +107,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
@@ -114,8 +124,10 @@ import com.example.project1.clases.BiometricPromptManager.BiometricResult
 import com.example.project1.ui.sreens.ProfileScreen
 import com.example.project1.data.model.MenuModel
 import com.example.project1.data.model.PostModel
+import com.example.project1.data.model.Reminder
 import com.example.project1.ui.components.PostCard
 import com.example.project1.ui.components.PostCardCompact
+import com.example.project1.ui.viewmodel.ReminderViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -138,8 +150,9 @@ fun Components(navController: NavController, promptManager: BiometricPromptManag
         MenuModel(11, "Alert Dialogs", "alert-dialogs", Icons.Filled.AccountBox),
         MenuModel(12, "Bars", "bars", Icons.Filled.AccountBox),
         MenuModel(13, "Adaptive", "adaptive", Icons.Filled.AccountBox),
+        MenuModel(14, "ReminderApp", "reminder", Icons.Filled.AccountBox)
         MenuModel(17, "HomeScreen", "home-screen", Icons.Filled.AccountCircle)
-    )
+  )
     var component by rememberSaveable { mutableStateOf("") }//actualizar el valor de la variable en la interfaz
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -220,6 +233,8 @@ fun Components(navController: NavController, promptManager: BiometricPromptManag
                 }
                 "home-screen" -> {
                     ProfileScreen(navController)
+                "reminder" -> {
+                    ReminderApp()
                 }
             }
         }
@@ -913,5 +928,249 @@ fun profileInfo(){
             modifier = Modifier.padding(horizontal = 10.dp),
             fontSize = 18.sp
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReminderApp() {
+    val viewModel: ReminderViewModel = viewModel()
+    val reminders by viewModel.reminders.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
+    val context = LocalContext.current
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Recordatorios") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showDialog = true }) {
+                Text("+")
+            }
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            // Lista de recordatorios
+            items(reminders) { reminder ->
+                ReminderItem(
+                    reminder = reminder,
+                    onDelete = { viewModel.deleteReminder(context, reminder) }
+                )
+            }
+        }
+
+        // agregar recordatorio
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Nuevo Recordatorio") },
+                text = {
+                    Column {
+                        TextField(
+                            value = title,
+                            onValueChange = { title = it },
+                            label = { Text("Título") }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
+                            value = description,
+                            onValueChange = { description = it },
+                            label = { Text("Descripción") }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        // Boton para mostrar DatePicker
+                        Button(
+                            onClick = { showDatePicker = true }
+                        ) {
+                            Text(
+                                "Seleccionar Fecha: ${
+                                    SimpleDateFormat(
+                                        "dd/MM/yyyy",
+                                        Locale.getDefault()
+                                    ).format(selectedDate.time)
+                                }"
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Boton para mostrar TimePicker
+                        Button(
+                            onClick = { showTimePicker = true }
+                        ) {
+                            Text(
+                                "Seleccionar Hora: ${
+                                    SimpleDateFormat(
+                                        "HH:mm",
+                                        Locale.getDefault()
+                                    ).format(selectedDate.time)
+                                }"
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        viewModel.addReminder(
+                            context,
+                            title,
+                            description,
+                            selectedDate.timeInMillis
+                        )
+                        title = ""
+                        description = ""
+                        showDialog = false
+                    }) {
+                        Text("Guardar")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showDialog = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
+
+        // DatePicker
+        if (showDatePicker) {
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = selectedDate.timeInMillis
+            )
+
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        datePickerState.selectedDateMillis?.let { dateMillis ->
+                            val newDate = Calendar.getInstance().apply {
+                                timeInMillis = dateMillis
+                            }
+                            selectedDate.set(
+                                newDate.get(Calendar.YEAR),
+                                newDate.get(Calendar.MONTH),
+                                newDate.get(Calendar.DAY_OF_MONTH)
+                            )
+                        }
+                        showDatePicker = false
+                    }) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = datePickerState,
+                    showModeToggle = false
+                )
+            }
+        }
+
+        // TimePicker
+        if (showTimePicker) {
+            TimePickerDialog(
+                onDismissRequest = { showTimePicker = false },
+                onConfirm = { hour, minute ->
+                    selectedDate.set(Calendar.HOUR_OF_DAY, hour)
+                    selectedDate.set(Calendar.MINUTE, minute)
+                    showTimePicker = false
+                }
+            )
+        }
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimePickerDialog(
+    onDismissRequest: () -> Unit,
+    onConfirm: (Int, Int) -> Unit
+) {
+    val currentTime = Calendar.getInstance()
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+        initialMinute = currentTime.get(Calendar.MINUTE),
+        is24Hour = true
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("Seleccionar hora") },
+        text = {
+            Column(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TimePicker(state = timePickerState)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReminderItem(reminder: Reminder, onDelete: () -> Unit) {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = reminder.title,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = reminder.description,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = dateFormat.format(Date(reminder.dateTime)),
+                style = MaterialTheme.typography.bodySmall
+            )
+            Button(
+                onClick = onDelete,
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text("Eliminar")
+            }
+        }
     }
 }

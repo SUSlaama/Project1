@@ -61,12 +61,11 @@ fun LoginForm (navController: NavController) {
             modifier = Modifier
                 .padding(20.dp)
         ) {
-            /*
             AsyncImage(
                 model = "https://logosmarcas.net/wp-content/uploads/2020/12/GitHub-Logo-650x366.png",
                 contentDescription = "Github logo",
                 contentScale = ContentScale.Fit
-            )*/
+            )
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth(),

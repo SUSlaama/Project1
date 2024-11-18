@@ -74,4 +74,11 @@ dependencies {
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.asynclayoutinflater:asynclayoutinflater-appcompat:1.1.0-alpha01")
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
+    implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+    implementation("androidx.core:core-ktx:1.10.0")
+    implementation("androidx.activity:activity-ktx:1.7.0")
 }
