@@ -1,13 +1,20 @@
 package com.example.project1.ui.sreens
 
-import android.content.res.AssetManager.AssetInputStream
-import android.service.voice.VoiceInteractionSession.AssistState
+import android.os.Build
+import android.content.Intent
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+import android.provider.Settings
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,20 +23,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -77,14 +82,14 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
-import androidx.compose.material3.TimePicker
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -95,10 +100,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -106,6 +109,9 @@ import androidx.navigation.NavController
 import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.project1.R
+import com.example.project1.clases.BiometricPromptManager
+import com.example.project1.clases.BiometricPromptManager.BiometricResult
+import com.example.project1.ui.sreens.ProfileScreen
 import com.example.project1.data.model.MenuModel
 import com.example.project1.data.model.PostModel
 import com.example.project1.ui.components.PostCard
@@ -115,10 +121,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.logging.Filter
 
 @Composable
-fun Components(navController: NavController) {
+fun Components(navController: NavController, promptManager: BiometricPromptManager) {
     val menuOptions = arrayOf(
         MenuModel(1, "Buttons", "buttons", Icons.Filled.AccountBox),
         MenuModel(2, "Floating Buttons", "floating-buttons", Icons.Filled.DateRange),
@@ -132,7 +137,8 @@ fun Components(navController: NavController) {
         MenuModel(10, "Snack Bars", "snack-bars", Icons.Filled.AccountBox),
         MenuModel(11, "Alert Dialogs", "alert-dialogs", Icons.Filled.AccountBox),
         MenuModel(12, "Bars", "bars", Icons.Filled.AccountBox),
-        MenuModel(13, "Adaptive", "adaptive", Icons.Filled.AccountBox)
+        MenuModel(13, "Adaptive", "adaptive", Icons.Filled.AccountBox),
+        MenuModel(17, "HomeScreen", "home-screen", Icons.Filled.AccountCircle)
     )
     var component by rememberSaveable { mutableStateOf("") }//actualizar el valor de la variable en la interfaz
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -211,6 +217,9 @@ fun Components(navController: NavController) {
                 }
                 "adaptive" -> {
                     Adaptive()
+                }
+                "home-screen" -> {
+                    ProfileScreen(navController)
                 }
             }
         }
@@ -801,4 +810,108 @@ fun Adaptive(){
     Expanded height > 900dp Tablet in portrait    */
 
     //Text(text = WindowsSize.toString())
+}
+
+@Composable
+fun HomeScreen(navController : NavController,promptManager: BiometricPromptManager){
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ){
+        LazyColumn{
+            item {
+                profileRow(navController,promptManager)
+
+            }
+            items(2){
+                Image(
+                    painter = painterResource(id = R.drawable.android_logo),
+                    contentDescription = "android logo",
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+    }
+}
+
+@Composable
+fun profileRow(navController : NavController,promptManager:BiometricPromptManager){
+
+    val biometricResult by promptManager.promptResults.collectAsState(initial = null)
+    val enrollLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            println("Activity result: $it")
+        }
+    )
+    LaunchedEffect(biometricResult) {
+        if(biometricResult is BiometricResult.AuthenticationNotSet){
+            if(Build.VERSION.SDK_INT >= 30){
+                val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                    putExtra(
+                        Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                        BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+                    )
+                }
+                enrollLauncher.launch(enrollIntent)
+            }
+        }
+    }
+    Row(
+        modifier = Modifier
+            .padding(10.dp)
+            .border(
+                width = 1.dp,
+                color = Color.Black,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .fillMaxWidth(),
+
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        profileInfo()
+        TextButton(
+            onClick = {
+                promptManager.showBiometricPrompt(
+                    title = "Authenticate",
+                    description = "Please, identify yourself"
+                )
+            }
+        ) {
+            Text("Edit")
+        }
+
+        biometricResult?.let{
+                result ->
+            when(result){
+                is BiometricPromptManager.BiometricResult.AuthenticationSuccess -> {
+                    if (navController.currentDestination?.route != "profile") {
+                        navController.navigate("profile")
+                    }
+                }
+                else ->{
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun profileInfo(){
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Icon(
+            imageVector = Icons.Filled.AccountCircle,
+            contentDescription = "Profile icon",
+            modifier=Modifier.size(50.dp)
+
+        )
+        Text(
+            "Profile",
+            modifier = Modifier.padding(horizontal = 10.dp),
+            fontSize = 18.sp
+        )
+    }
 }
